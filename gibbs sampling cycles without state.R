@@ -1,3 +1,4 @@
+
 library(openxlsx)
 library(actuar)
 library(psych)
@@ -62,6 +63,10 @@ for(gibbs_counter in 1:35000)
   
   noise_sigma_saver[,gibbs_counter]=noise_sigma
   
+  if(gibbs_counter%%110==0)
+  {
+    print(gibbs_counter)
+  }
 }
 
 # p_miu_average=matrix(0,nrow=2,ncol=1)
@@ -114,13 +119,15 @@ for(i in 1:nrow(y_index))
 {
   factor_average[,i]=mean(factor_saver[i,5001:35000])
 }
-# 
-# factor_added=matrix(0,nrow=1,ncol=ncol(y_cycle))
-# factor_added[,1]=factor_average[,1]
-# for(j in 2:ncol(y_cycle))
-# {
-#   factor_added[,j]=factor_added[,j-1]+factor_average[,j-1]
-# }
+
+ 
+factor_seasoned=matrix(0,nrow=1,ncol=floor(ncol(y_cycle)/3))
+
+#factor_added[,1]=factor_average[,1]
+for(t in 1:floor(ncol(y_cycle)/3))
+{
+  factor_seasoned[,t]=sum(factor_average[,((t-1)*3+1):(t*3)])
+}
 
 
 
@@ -135,11 +142,13 @@ for(i in 1:nrow(y_index))
 # lines(x=dates[-(1:4)],y=y_index[-(1:4),2]/1000,type="l",col="green")
 # lines(x=dates[-(1:4)],y=y_index[-(1:4),3]/1000,type="l",col="yellow")
 
+# factor_average=factor_average+as.vector(y_season)
+# write.table(t(factor_average),file="factor.csv",sep=",",append = TRUE)
 
 
 
-
-write.table(t(factor_average),file="factor.csv",sep=",")
+write.table(t(factor_average),file="factor.csv",sep=",",append = TRUE)
+write.table(t(factor_seasoned),file="factor.csv",sep=",",append = TRUE)
 
 
 

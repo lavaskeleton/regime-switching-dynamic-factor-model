@@ -21,11 +21,15 @@ setwd("C:/Users/Administrator/Desktop/方老师宁波电力景气指数项目/hi
 ##读取数据（xlsx文件中，xls文件不行）
 
 #y_index=read.xlsx(xlsxFile = "宁波宏观电力景气指标.xlsx",sheet = 1,detectDates = TRUE, colNames = TRUE)
-y_index=read.xlsx(xlsxFile = "宁波宏观电力景气指标.xlsx",sheet = 1,detectDates = TRUE, colNames = TRUE)
+#y_index=read.xlsx(xlsxFile = "宁波宏观电力景气指标.xlsx",sheet = 1,detectDates = TRUE, colNames = TRUE)
+
+
+y_index=read.xlsx(xlsxFile = "宁波宏观电力景气指标.xlsx",sheet = 4,detectDates = TRUE, colNames = TRUE)
+
 
 #gdp=read.xlsx(xlsxFile = "宁波宏观电力景气指标.xlsx",sheet = 5,detectDates = TRUE, colNames = TRUE)
 
-#y_GDP=read.xlsx(xlsxFile = "宁波市GDP.xlsx",sheet = 2,detectDates = TRUE, colNames = TRUE)
+#y_GDP=read.xlsx(xlsxFile = "宁波宏观电力景气指标.xlsx",sheet = 5,detectDates = TRUE, colNames = TRUE)
 
 #y_index=read.xlsx(xlsxFile = "全宁波数据V1.0.xlsx",sheet = 1,detectDates = TRUE, colNames = TRUE)
 
@@ -46,7 +50,7 @@ y_index=read.xlsx(xlsxFile = "宁波宏观电力景气指标.xlsx",sheet = 1,det
 
 ##去除日期列
 y_index=y_index[,-1]
-#gdp=gdp[,-1]
+#y_GDP=y_GDP[,-1]
 
 #cov(gdp,y_index[,3])
 
@@ -63,31 +67,48 @@ y_index=y_index[,-1]
 # {
 #   y_index[,j]=(y_index[,j]-min(y_index[,j]))/(max(y_index[,j])-min(y_index[,j]))*40+60
 # }
+# j=1
+# for(j in 1:length(y_GDP))
+# {
+#     y_GDP[,j]=(y_GDP[,j]-min(y_GDP[,j]))/(max(y_GDP[,j])-min(y_GDP[,j]))*40+60
+# 
+# }
 
 ##周期因子与随机因素项，后续计算使用的数据序列
 
-y_cycle=matrix(0,nrow=nrow(y_index),ncol=ncol(y_index))
+#y_cycle=matrix(0,nrow=nrow(y_index),ncol=ncol(y_index))
+y_cycle=y_index
 
-for(j in 1:ncol(y_index))
-{
-  y_index[,j]=(y_index[,j]-mean(y_index[,j]))/sd(y_index[,j])
+#for(j in 1:ncol(y_index))
+#{
+  #y_index[,j]=(y_index[,j]-mean(y_index[,j]))/sd(y_index[,j])
+  #y_index[,j]=(y_index[,j]-mean(y_index[,j]))
+#}
 
-}
-
+#plot(y_index[,2],type="l")
 ##季节调整（ts调整为时间序列，stl进行分解，seasadj去除季节因素）
+# y_season=stl(ts(y_index[,j],frequency = 12),s.window = "periodic")[[1]][,1]
+# y_trend=stl(ts(y_index[,j],frequency = 12),s.window = "periodic")[[1]][,2]
+# 
+# write.csv(y_season,file="season.csv")
+# write.csv(y_trend,file="trend.csv")
+# 
+# j=1
+# for(j in 1:ncol(y_index))
+# {
+#   y_index[,j]=as.vector(seasadj(stl(ts(y_index[,j],frequency = 12),s.window = "periodic")))
+#   
+#   #y_index[,j]=as.vector(seasadj(decompose(ts(y_index[,j],frequency = 12),type="additive")))
+# }  
+# y_GDP=as.vector(seasadj(stl(ts(y_GDP,frequency = 4),s.window = "periodic")))
+# 
+# y_GDP=hpfilter(y_GDP,type="lambda",freq=1600)$cycle
 
-j=1
-for(j in 1:ncol(y_index))
-{
-  #y_index[,j]=as.vector(seasadj(stl(ts(y_index[,j],frequency = 12),s.window = "periodic")))
-  y_index[,j]=as.vector(seasadj(stl(ts(y_index[,j],frequency = 12),s.window="periodic")))
-
-}
 # 
 # 
 # 
 # 
-# # y_GDP[,4]=as.vector(seasadj(decompose(ts(y_GDP[,4],frequency = 4),type="multiplicative")))
+# # 
 # # y_index[,1]=as.vector(seasadj(stl(ts(y_index[,1],frequency = 12),s.window = "periodic")))
 # # 
 # # write.csv(y_index[,1],file = "全行业用电量去季节化.csv")
@@ -96,14 +117,19 @@ for(j in 1:ncol(y_index))
 # 
 ##hp滤波（月数据为129600，季度为1600，年为6.25）
 #y_cycle=y_index
-j=1
+# j=1
+# for(j in 1:ncol(y_index))
+# {
+#   y_cycle[,j]=hpfilter(y_index[,j],type="lambda",freq=129600)$cycle
+# }
+# 
 for(j in 1:ncol(y_index))
-{
-  y_cycle[,j]=hpfilter(y_index[,j],type="lambda",freq=129600)$cycle
-}
-
-
-
+ {
+  y_cycle[,j]=(y_cycle[,j]-min(y_cycle[,j]))/(max(y_cycle[,j])-min(y_cycle[,j]))*40+60
+#    y_index[,j]=(y_index[,j]-mean(y_index[,j]))/sd(y_index[,j])
+#    y_index[,j]=(y_index[,j]-mean(y_index[,j]))
+#    y_cycle[,j]=(y_cycle[,j]-mean(y_cycle[,j]))/sd(y_cycle[,j])
+ }
 
 #主成分变量作为变量初始值
 

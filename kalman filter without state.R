@@ -66,9 +66,9 @@ if(gibbs_counter==1)
 {
   factor_error_variance_for_former=matrix(c(1,0,0,1),nrow=2,ncol=2)
 
-}else if(gibbs_counter>=1)
+}else if(gibbs_counter>1)
 {
-  factor_error_variance_for_former=update_factor_error_variance_estimation[(1:2),(1:2)]
+  factor_error_variance_for_former=factor_error_variance_estimation[(1:2),(1:2)]
 }
 
 
